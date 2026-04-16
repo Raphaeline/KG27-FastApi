@@ -39,29 +39,6 @@ def parseNetwork(hexString):
     except:
         return None
 
-# blm selesai
-
-
-def parseTemperatures(hexString):
-    if not isinstance(hexString, str):
-        return []
-
-    idx = hexString.find("012C")
-    if idx >= 4:
-        try:
-            length = int(hexString[idx-4: idx], 16)
-            dataLenChars = (length - 2) * 2
-            dataStart = idx + 4
-            dataHex = hexString[dataStart: dataStart + dataLenChars]
-
-            temps = []
-            for i in range(0, len(dataHex), 2):
-                temps.append(int(dataHex[i:i+2], 16))
-            return temps
-        except ValueError:
-            return "Error"
-    return None
-
 
 def parseInternalVoltage(hexString):
     if not isinstance(hexString, str):
@@ -95,12 +72,34 @@ def parseExternalVoltage(hexString):
     return None
 
 
+# blm selesai
+def parseTemperatures(hexString):
+    if not isinstance(hexString, str):
+        return []
+
+    idx = hexString.find("012C")
+    if idx >= 4:
+        try:
+            length = int(hexString[idx-4: idx], 16)
+            dataLenChars = (length - 2) * 2
+            dataStart = idx + 4
+            dataHex = hexString[dataStart: dataStart + dataLenChars]
+
+            temps = []
+            for i in range(0, len(dataHex), 2):
+                temps.append(int(dataHex[i:i+2], 16))
+            return temps
+        except ValueError:
+            return "Error"
+    return None
+
+
 def process_hex_row(row):
     hexData = row['custom.235.hex']
     return pd.Series({
         'fuelHeight': parseFuelHeight(hexData),
         'networkType': parseNetwork(hexData),
-        # 'temperatures': parseTemperatures(hexData),
         'internalVoltage': parseInternalVoltage(hexData),
         'externalVoltage': parseExternalVoltage(hexData),
+        # 'temperatures': parseTemperatures(hexData),
     })
